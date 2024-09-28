@@ -73,11 +73,13 @@ ENDIF()
 
 PROJECT(Assimp VERSION 5.4.3)
 
+SET(ASSIMP_FOLDER "Third Party/Assimp")
+
 # All supported options ###############################################
 
 OPTION( BUILD_SHARED_LIBS
   "Build package with shared libraries."
-  ON
+  OFF
 )
 OPTION( ASSIMP_BUILD_FRAMEWORK
   "Build package as Mac OS X Framework bundle."
@@ -109,7 +111,7 @@ OPTION ( ASSIMP_BUILD_SAMPLES
 )
 OPTION ( ASSIMP_BUILD_TESTS
   "If the test suite for Assimp is built in addition to the library."
-  ON
+  OFF
 )
 OPTION ( ASSIMP_COVERALLS
   "Enable this to measure test coverage."
@@ -137,7 +139,7 @@ OPTION ( ASSIMP_BUILD_DOCS
 )
 OPTION( ASSIMP_INJECT_DEBUG_POSTFIX
   "Inject debug postfix in .a/.so/.dll lib names"
-  ON
+  OFF
 )
 
 OPTION ( ASSIMP_IGNORE_GIT_HASH
@@ -173,7 +175,7 @@ IF (WIN32)
     # Link statically against c/c++ lib to avoid missing redistributable such as
     # "VCRUNTIME140.dll not found. Try reinstalling the app.", but give users
     # a choice to opt for the shared runtime if they want.
-    option(USE_STATIC_CRT "Link against the static runtime libraries." OFF)
+    option(USE_STATIC_CRT "Link against the static runtime libraries." ON)
 
     # The CMAKE_CXX_FLAGS vars can be overridden by some Visual Studio generators, so we use an alternative
     # global method here:
@@ -419,6 +421,7 @@ IF (NOT TARGET uninstall AND ASSIMP_INSTALL)
   # add make uninstall capability
   CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
   ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+  SET_TARGET_PROPERTIES(uninstall PROPERTIES FOLDER ${ASSIMP_FOLDER})
 ENDIF()
 
 IF( UNIX )
@@ -872,6 +875,7 @@ if(WIN32)
 
   IF(MSVC12 OR MSVC14 OR MSVC15 )
     ADD_CUSTOM_TARGET(UpdateAssimpLibsDebugSymbolsAndDLLs COMMENT "Copying Assimp Libraries ..." VERBATIM)
+	SET_TARGET_PROPERTIES(UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER ${ASSIMP_FOLDER})
     IF(CMAKE_GENERATOR MATCHES "^Visual Studio")
       ADD_CUSTOM_COMMAND(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/code/Release/assimp-${ASSIMP_MSVC_VERSION}-mt.dll	${BIN_DIR}assimp-${ASSIMP_MSVC_VERSION}-mt.dll VERBATIM)
       ADD_CUSTOM_COMMAND(TARGET UpdateAssimpLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/code/Release/assimp-${ASSIMP_MSVC_VERSION}-mt.exp	${LIB_DIR}assimp-${ASSIMP_MSVC_VERSION}-mt.exp VERBATIM)
